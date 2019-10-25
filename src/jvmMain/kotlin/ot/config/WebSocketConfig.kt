@@ -1,27 +1,22 @@
 package ot.config
 
-import org.springframework.context.annotation.Bean
-import org.springframework.context.annotation.ComponentScan
+
 import org.springframework.context.annotation.Configuration
-import org.springframework.web.reactive.HandlerMapping
-import org.springframework.web.reactive.handler.SimpleUrlHandlerMapping
-import org.springframework.web.reactive.socket.WebSocketHandler
-import org.springframework.web.reactive.socket.server.support.WebSocketHandlerAdapter
+import org.springframework.messaging.simp.config.MessageBrokerRegistry
+import org.springframework.web.socket.config.annotation.EnableWebSocketMessageBroker
+import org.springframework.web.socket.config.annotation.StompEndpointRegistry
+import org.springframework.web.socket.config.annotation.WebSocketMessageBrokerConfigurer
 
 @Configuration
-@ComponentScan(value = ["ot"])
-class WebSocketConfig {
+@EnableWebSocketMessageBroker
+class WebSocketConfig : WebSocketMessageBrokerConfigurer {
 
-    @Bean
-    fun websocketHandlerAdapter() = WebSocketHandlerAdapter()
+    override fun registerStompEndpoints(registry: StompEndpointRegistry) {
+        registry.addEndpoint("/ws").withSockJS()
+    }
 
-    @Bean
-    fun handlerMapping(webSocketHandler: WebSocketHandler): HandlerMapping {
-        val handlerMapping = SimpleUrlHandlerMapping()
-        handlerMapping.urlMap = mapOf(
-            "/ws/sample" to webSocketHandler
-        )
-        handlerMapping.order = 1
-        return handlerMapping
+    override fun configureMessageBroker(registry: MessageBrokerRegistry) {
+        registry.setApplicationDestinationPrefixes("/app")
+        registry.enableSimpleBroker("/topic")
     }
 }
