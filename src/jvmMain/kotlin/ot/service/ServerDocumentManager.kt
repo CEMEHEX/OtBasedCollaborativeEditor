@@ -1,4 +1,4 @@
-package server.service
+package ot.service
 
 import ot.Operation
 import server.entity.Document
@@ -17,16 +17,16 @@ interface ServerDocumentManager<T, O : Operation<T>> {
      * @param operation operation from client
      * @return transformed operation
      */
-    fun receiveOperation(operation: O): O
+    fun receiveOperation(documentId: Long, operation: O): O
 
     /**
      * @return latest version of document
      */
-    fun getDocument(): Document<T>
+    fun getDocument(documentId: Long): Document<T>
 
     /**
      * @return latest document revision
      */
-    val revision: Int
+    fun getRevision(documentId: Long): Int
 
 }

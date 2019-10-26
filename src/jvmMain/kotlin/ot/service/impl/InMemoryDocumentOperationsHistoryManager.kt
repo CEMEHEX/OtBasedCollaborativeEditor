@@ -1,7 +1,7 @@
-package server.service.impl
+package ot.service.impl
 
 import ot.Operation
-import server.service.DocumentOperationsHistoryManager
+import ot.service.DocumentOperationsHistoryManager
 
 class InMemoryDocumentOperationsHistoryManager<O : Operation<*>>(
     private val operations: MutableMap<Long, MutableList<O>>

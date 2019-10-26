@@ -1,8 +1,8 @@
-package server.service.impl
+package ot.service.impl
 
+import ot.service.DocumentStorage
 import server.entity.Document
 import server.exception.DocumentNotFoundException
-import server.service.DocumentStorage
 
 class InMemoryDocumentStorage<T>(
         private val documents: MutableMap<Long, Document<T>>

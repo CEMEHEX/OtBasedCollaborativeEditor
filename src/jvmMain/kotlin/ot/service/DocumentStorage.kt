@@ -1,4 +1,4 @@
-package server.service
+package ot.service
 
 import server.entity.Document
 
