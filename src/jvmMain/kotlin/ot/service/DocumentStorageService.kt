@@ -7,7 +7,7 @@ import server.entity.Document
  *
  * @param T document content type
  */
-interface DocumentStorage<T> {
+interface DocumentStorageService<T> {
 
     fun getDocumentById(id: Long): Document<T>
 

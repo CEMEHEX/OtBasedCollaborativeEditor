@@ -1,11 +1,11 @@
 package ot.service.impl
 
 import ot.Operation
-import ot.service.DocumentOperationsHistoryManager
+import ot.service.DocumentOperationsHistoryService
 
-class InMemoryDocumentOperationsHistoryManager<O : Operation<*>>(
+class InMemoryDocumentOperationsHistoryService<O : Operation<*>>(
     private val operations: MutableMap<Long, MutableList<O>>
-) : DocumentOperationsHistoryManager<O> {
+) : DocumentOperationsHistoryService<O> {
 
     override fun operationsCount(documentId: Long): Int = operations[documentId]?.size ?: 0
 

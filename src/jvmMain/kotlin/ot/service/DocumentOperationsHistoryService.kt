@@ -7,7 +7,7 @@ import ot.Operation
  *
  * @param O operation type
  */
-interface DocumentOperationsHistoryManager<O : Operation<*>> {
+interface DocumentOperationsHistoryService<O : Operation<*>> {
 
     fun operationsCount(documentId: Long): Int
 

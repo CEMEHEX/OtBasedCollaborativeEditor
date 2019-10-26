@@ -1,12 +1,12 @@
 package ot.service.impl
 
-import ot.service.DocumentStorage
+import ot.service.DocumentStorageService
 import server.entity.Document
 import server.exception.DocumentNotFoundException
 
-class InMemoryDocumentStorage<T>(
+class InMemoryDocumentStorageService<T>(
         private val documents: MutableMap<Long, Document<T>>
-) : DocumentStorage<T> {
+) : DocumentStorageService<T> {
 
     override fun getDocumentById(id: Long): Document<T> =
             documents[id] ?: throw DocumentNotFoundException(id)

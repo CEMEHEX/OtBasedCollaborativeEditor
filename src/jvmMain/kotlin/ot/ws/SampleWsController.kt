@@ -13,14 +13,13 @@ class OtWsController(
     val serverDocumentManager: ServerDocumentManager<String, PlainTextSingleCharacterOperation>
 ) {
 
+
     @MessageMapping("/{documentId}/operation")
     @SendTo("/topic/public/operation/{documentId}")
     fun sendMessage(
-        @Payload operation: String,
-        @DestinationVariable documentId: String
-    ): PlainTextSingleCharacterOperation = TODO()/*serverDocumentManager.receiveOperation(
-        documentId.toLong(),
-        operation
-    )*/
+        @Payload operation: PlainTextSingleCharacterOperation,
+        @DestinationVariable documentId: Long
+    ): PlainTextSingleCharacterOperation = serverDocumentManager.receiveOperation(documentId, operation)
+        .also { println("Current document: ${serverDocumentManager.getDocument(documentId)}") }
 
 }

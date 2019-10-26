@@ -5,12 +5,13 @@ import org.springframework.context.annotation.Configuration
 import ot.OperationsManager
 import ot.impl.PlainTextOperationsManager
 import ot.impl.PlainTextSingleCharacterOperation
-import ot.service.DocumentOperationsHistoryManager
-import ot.service.DocumentStorage
+import ot.service.DocumentOperationsHistoryService
+import ot.service.DocumentStorageService
 import ot.service.ServerDocumentManager
-import ot.service.impl.InMemoryDocumentOperationsHistoryManager
-import ot.service.impl.InMemoryDocumentStorage
+import ot.service.impl.InMemoryDocumentOperationsHistoryService
+import ot.service.impl.InMemoryDocumentStorageService
 import ot.service.impl.ServerDocumentManagerImpl
+import server.entity.Document
 
 @Configuration
 class OtConfig {
@@ -19,19 +20,21 @@ class OtConfig {
     fun plainTextSingleCharacterOperationsManager(): PlainTextOperationsManager = PlainTextOperationsManager()
 
     @Bean
-    fun plainTextDocumentStorage(): DocumentStorage<String> = InMemoryDocumentStorage(mutableMapOf())
+    fun plainTextDocumentStorage(): DocumentStorageService<String> = InMemoryDocumentStorageService(mutableMapOf(
+        1L to Document(1, 0, "abc")
+    ))
 
     @Bean
     fun plainTextDocumentOperationsHistoryManager(
-    ): DocumentOperationsHistoryManager<PlainTextSingleCharacterOperation> =
-        InMemoryDocumentOperationsHistoryManager(mutableMapOf())
+    ): DocumentOperationsHistoryService<PlainTextSingleCharacterOperation> =
+        InMemoryDocumentOperationsHistoryService(mutableMapOf())
 
     @Bean
     fun plainTextServerDocumentManager(
         operationsManager: OperationsManager<PlainTextSingleCharacterOperation>,
-        documentOperationsHistoryManager: DocumentOperationsHistoryManager<PlainTextSingleCharacterOperation>,
-        documentStorage: DocumentStorage<String>
+        documentOperationsHistoryService: DocumentOperationsHistoryService<PlainTextSingleCharacterOperation>,
+        documentStorageService: DocumentStorageService<String>
     ): ServerDocumentManager<String, PlainTextSingleCharacterOperation> =
-        ServerDocumentManagerImpl(documentOperationsHistoryManager, operationsManager, documentStorage)
+        ServerDocumentManagerImpl(documentOperationsHistoryService, operationsManager, documentStorageService)
 
 }
