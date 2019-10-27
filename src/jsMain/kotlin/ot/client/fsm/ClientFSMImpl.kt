@@ -1,4 +1,4 @@
-package client.fsm
+package ot.client.fsm
 
 import ot.service.Operation
 

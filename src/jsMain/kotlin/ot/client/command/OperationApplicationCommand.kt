@@ -1,4 +1,4 @@
-package client.command
+package ot.client.command
 
 import ot.service.Operation
 

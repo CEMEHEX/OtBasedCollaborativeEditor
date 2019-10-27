@@ -1,14 +1,11 @@
-package client.fsm
+package ot.client
 
-import client.command.OperationApplicationCommand
+import ot.client.command.OperationApplicationCommand
 import ot.service.Operation
 
-interface State<T, O : Operation<T>> {
-
-    val clientFSM: ClientFSM<T, O>
+interface ClientDocumentManager<T, O : Operation<T>> {
 
     fun processLocalOperation(operation: O): OperationApplicationCommand<O>
 
     fun processRemoteOperation(operation: O): OperationApplicationCommand<O>
-
 }
