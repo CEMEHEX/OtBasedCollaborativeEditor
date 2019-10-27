@@ -1,5 +1,6 @@
 package ot.ws
 
+import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import org.springframework.messaging.handler.annotation.DestinationVariable
 import org.springframework.messaging.handler.annotation.MessageMapping
@@ -9,7 +10,7 @@ import org.springframework.stereotype.Controller
 import ot.impl.PlainTextSingleCharacterOperation
 import ot.service.ServerDocumentManager
 
-val logger = LoggerFactory.getLogger(OtWsController::class.java)
+val logger: Logger = LoggerFactory.getLogger(OtWsController::class.java)
 
 @Controller
 class OtWsController(
