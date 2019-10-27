@@ -3,7 +3,7 @@ buildscript {
         jcenter()
     }
 }
-
+// TODO use kotlinx.serialization
 plugins {
     id 'org.jetbrains.kotlin.multiplatform' version '1.3.40'
     id 'org.springframework.boot' version "2.2.0.RELEASE"
