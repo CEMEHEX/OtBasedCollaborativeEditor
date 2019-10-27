@@ -1,6 +1,6 @@
 package ot.service.impl
 
-import ot.Operation
+import ot.service.Operation
 import ot.service.DocumentOperationsHistoryService
 
 class InMemoryDocumentOperationsHistoryService<O : Operation<*>>(

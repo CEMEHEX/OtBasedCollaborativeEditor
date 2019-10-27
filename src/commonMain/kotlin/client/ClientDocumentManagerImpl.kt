@@ -2,7 +2,7 @@ package client
 
 import client.command.OperationApplicationCommand
 import client.fsm.ClientFSM
-import ot.Operation
+import ot.service.Operation
 
 class ClientDocumentManagerImpl<T, O : Operation<T>>(
         private val clientFSM: ClientFSM<T, O>

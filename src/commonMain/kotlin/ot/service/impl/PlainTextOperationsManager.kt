@@ -1,6 +1,6 @@
-package ot.impl
+package ot.service.impl
 
-import ot.OperationsManager
+import ot.service.OperationsManager
 
 class PlainTextOperationsManager : OperationsManager<PlainTextSingleCharacterOperation> {
 

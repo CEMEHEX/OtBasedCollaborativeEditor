@@ -7,14 +7,15 @@ import org.springframework.messaging.handler.annotation.MessageMapping
 import org.springframework.messaging.handler.annotation.Payload
 import org.springframework.messaging.handler.annotation.SendTo
 import org.springframework.stereotype.Controller
-import ot.impl.PlainTextSingleCharacterOperation
+import ot.entity.PlainTextDocument
 import ot.service.ServerDocumentManager
+import ot.service.impl.PlainTextSingleCharacterOperation
 
 val logger: Logger = LoggerFactory.getLogger(OtWsController::class.java)
 
 @Controller
 class OtWsController(
-    private val serverDocumentManager: ServerDocumentManager<String, PlainTextSingleCharacterOperation>
+    private val serverDocumentManager: ServerDocumentManager<String, PlainTextSingleCharacterOperation, PlainTextDocument>
 ) {
 
     @MessageMapping("/{documentId}/operation")

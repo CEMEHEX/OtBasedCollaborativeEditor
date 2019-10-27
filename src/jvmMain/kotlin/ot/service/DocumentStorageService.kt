@@ -1,16 +1,16 @@
 package ot.service
 
-import server.entity.Document
+import ot.entity.Document
 
 /**
  *  Storage for documents
  *
- * @param T document content type
+ * @param D document type
  */
-interface DocumentStorageService<T> {
+interface DocumentStorageService<D : Document<*>> {
 
-    fun getDocumentById(id: Long): Document<T>
+    fun getDocumentById(id: Long): D
 
-    fun save(document: Document<T>)
+    fun save(document: D)
 
 }

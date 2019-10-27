@@ -1,4 +1,4 @@
-package ot
+package ot.service
 
 /**
  * Action that can be applied to transform some content

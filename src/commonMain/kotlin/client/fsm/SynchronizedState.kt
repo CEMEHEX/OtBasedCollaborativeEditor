@@ -3,8 +3,8 @@ package client.fsm
 import client.command.ApplyOperationLocally
 import client.command.OperationApplicationCommand
 import client.command.SendOperationToServer
-import ot.Operation
-import ot.OperationsManager
+import ot.service.Operation
+import ot.service.OperationsManager
 
 class SynchronizedState<T, O : Operation<T>>(
     override val clientFSM: ClientFSM<T, O>,

@@ -1,15 +1,13 @@
 package ot.service
 
-import ot.Operation
-import server.entity.Document
-
 /**
  * Generic OT based server engine for collaborative editing
  *
  * @param T document content type
  * @param O operations type
+ * @param D document type
  */
-interface ServerDocumentManager<T, O : Operation<T>> {
+interface ServerDocumentManager<T, O : Operation<T>, D> {
 
     /**
      * Process operation from client
@@ -22,7 +20,7 @@ interface ServerDocumentManager<T, O : Operation<T>> {
     /**
      * @return latest version of document
      */
-    fun getDocument(documentId: Long): Document<T>
+    fun getDocument(documentId: Long): D
 
     /**
      * @return latest document revision

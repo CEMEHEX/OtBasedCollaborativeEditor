@@ -1,8 +1,6 @@
 package client.fsm
 
-import ot.Operation
-import ot.OperationsManager
-import server.entity.Document
+import ot.service.Operation
 
 class ClientFSMImpl<T, O : Operation<T>>(
     override var state: State<T, O>

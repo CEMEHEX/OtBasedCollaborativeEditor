@@ -1,7 +1,7 @@
 package ot.util
 
-import ot.Operation
-import ot.OperationsManager
+import ot.service.Operation
+import ot.service.OperationsManager
 
 fun <O : Operation<*>> Collection<O>.transformAgainstEach(
     operation: O,

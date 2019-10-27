@@ -1,4 +1,4 @@
-package ot
+package ot.service
 
 /**
  * Generic manager which can perform additional actions with operations

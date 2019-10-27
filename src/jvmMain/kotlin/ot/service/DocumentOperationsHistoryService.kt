@@ -1,7 +1,5 @@
 package ot.service
 
-import ot.Operation
-
 /**
  *  Storage for documents operations history
  *

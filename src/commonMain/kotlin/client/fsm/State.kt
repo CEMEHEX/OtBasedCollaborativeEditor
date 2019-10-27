@@ -1,7 +1,7 @@
 package client.fsm
 
 import client.command.OperationApplicationCommand
-import ot.Operation
+import ot.service.Operation
 
 interface State<T, O : Operation<T>> {
 

@@ -1,6 +1,6 @@
-package ot.impl
+package ot.service.impl
 
-import ot.Operation
+import ot.service.Operation
 
 /**
  * Simple operation on plain text content. Modifies one character per operation.

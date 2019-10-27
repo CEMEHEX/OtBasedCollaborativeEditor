@@ -1,7 +1,7 @@
 package client
 
 import client.command.OperationApplicationCommand
-import ot.Operation
+import ot.service.Operation
 
 interface ClientDocumentManager<T, O : Operation<T>> {
 

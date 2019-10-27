@@ -1,6 +1,6 @@
 package client.command
 
-import ot.Operation
+import ot.service.Operation
 
 sealed class OperationApplicationCommand<O : Operation<*>>
 

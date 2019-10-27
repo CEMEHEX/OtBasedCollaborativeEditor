@@ -4,8 +4,8 @@ import client.command.ApplyOperationLocally
 import client.command.NoCommand
 import client.command.OperationApplicationCommand
 import client.command.SendOperationToServer
-import ot.Operation
-import ot.OperationsManager
+import ot.service.Operation
+import ot.service.OperationsManager
 import ot.util.transformAgainstEach
 
 class AwaitConfirmationState<T, O : Operation<T>>(

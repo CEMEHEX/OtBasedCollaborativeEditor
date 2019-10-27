@@ -4,7 +4,7 @@ import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.databind.module.SimpleModule
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
-import ot.impl.PlainTextSingleCharacterOperation
+import ot.service.impl.PlainTextSingleCharacterOperation
 
 
 @Configuration

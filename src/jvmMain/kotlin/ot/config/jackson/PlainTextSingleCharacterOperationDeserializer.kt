@@ -5,10 +5,10 @@ import com.fasterxml.jackson.core.JsonParser
 import com.fasterxml.jackson.databind.DeserializationContext
 import com.fasterxml.jackson.databind.JsonNode
 import com.fasterxml.jackson.databind.deser.std.StdDeserializer
-import ot.impl.DeleteOperation
-import ot.impl.IdentityOperation
-import ot.impl.InsertOperation
-import ot.impl.PlainTextSingleCharacterOperation
+import ot.service.impl.DeleteOperation
+import ot.service.impl.IdentityOperation
+import ot.service.impl.InsertOperation
+import ot.service.impl.PlainTextSingleCharacterOperation
 
 
 class PlainTextSingleCharacterOperationDeserializer

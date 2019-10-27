@@ -3,10 +3,10 @@ package ot.config.jackson
 import com.fasterxml.jackson.core.JsonGenerator
 import com.fasterxml.jackson.databind.SerializerProvider
 import com.fasterxml.jackson.databind.ser.std.StdSerializer
-import ot.impl.DeleteOperation
-import ot.impl.IdentityOperation
-import ot.impl.InsertOperation
-import ot.impl.PlainTextSingleCharacterOperation
+import ot.service.impl.DeleteOperation
+import ot.service.impl.IdentityOperation
+import ot.service.impl.InsertOperation
+import ot.service.impl.PlainTextSingleCharacterOperation
 
 
 class PlainTextSingleCharacterOperationSerializer

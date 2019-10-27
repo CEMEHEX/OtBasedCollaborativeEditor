@@ -2,16 +2,18 @@ package ot.config
 
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
-import ot.OperationsManager
-import ot.impl.PlainTextOperationsManager
-import ot.impl.PlainTextSingleCharacterOperation
+import ot.service.OperationsManager
+import ot.service.impl.PlainTextOperationsManager
+import ot.service.impl.PlainTextSingleCharacterOperation
 import ot.service.DocumentOperationsHistoryService
 import ot.service.DocumentStorageService
+import ot.service.DocumentUpdater
 import ot.service.ServerDocumentManager
 import ot.service.impl.InMemoryDocumentOperationsHistoryService
-import ot.service.impl.InMemoryDocumentStorageService
+import ot.service.impl.InMemoryPlainTextDocumentStorageService
+import ot.service.impl.PlainTextDocumentUpdater
 import ot.service.impl.ServerDocumentManagerImpl
-import server.entity.Document
+import ot.entity.PlainTextDocument
 
 @Configuration
 class OtConfig {
@@ -20,9 +22,12 @@ class OtConfig {
     fun plainTextSingleCharacterOperationsManager(): PlainTextOperationsManager = PlainTextOperationsManager()
 
     @Bean
-    fun plainTextDocumentStorage(): DocumentStorageService<String> = InMemoryDocumentStorageService(mutableMapOf(
-        1L to Document(1, 0, "abc")
-    ))
+    fun plainTextDocumentStorage(): DocumentStorageService<PlainTextDocument> =
+        InMemoryPlainTextDocumentStorageService(
+            mutableMapOf(
+                1L to PlainTextDocument(1, 0, "abc")
+            )
+        )
 
     @Bean
     fun plainTextDocumentOperationsHistoryManager(
@@ -30,11 +35,21 @@ class OtConfig {
         InMemoryDocumentOperationsHistoryService(mutableMapOf())
 
     @Bean
+    fun plainTextDocumentUpdater() : DocumentUpdater<String, PlainTextDocument> =
+        PlainTextDocumentUpdater()
+
+    @Bean
     fun plainTextServerDocumentManager(
         operationsManager: OperationsManager<PlainTextSingleCharacterOperation>,
         documentOperationsHistoryService: DocumentOperationsHistoryService<PlainTextSingleCharacterOperation>,
-        documentStorageService: DocumentStorageService<String>
-    ): ServerDocumentManager<String, PlainTextSingleCharacterOperation> =
-        ServerDocumentManagerImpl(documentOperationsHistoryService, operationsManager, documentStorageService)
+        documentStorageService: DocumentStorageService<PlainTextDocument>,
+        documentUpdater: DocumentUpdater<String, PlainTextDocument>
+    ): ServerDocumentManager<String, PlainTextSingleCharacterOperation, PlainTextDocument> =
+        ServerDocumentManagerImpl(
+            documentOperationsHistoryService,
+            operationsManager,
+            documentStorageService,
+            documentUpdater
+        )
 
 }
