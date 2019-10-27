@@ -1,7 +1,14 @@
+# SERVER
 server:
   port: 8080
 
+# LOGGING
 logging:
   level:
     org.springframework: WARN
     ot: DEBUG
+
+# SPRING
+spring:
+  application:
+    name: OT based collaborative plain text editor server

@@ -13,7 +13,7 @@ val logger = LoggerFactory.getLogger(OtWsController::class.java)
 
 @Controller
 class OtWsController(
-    val serverDocumentManager: ServerDocumentManager<String, PlainTextSingleCharacterOperation>
+    private val serverDocumentManager: ServerDocumentManager<String, PlainTextSingleCharacterOperation>
 ) {
 
     @MessageMapping("/{documentId}/operation")
@@ -21,7 +21,21 @@ class OtWsController(
     fun sendMessage(
         @Payload operation: PlainTextSingleCharacterOperation,
         @DestinationVariable documentId: Long
-    ): PlainTextSingleCharacterOperation = serverDocumentManager.receiveOperation(documentId, operation)
-        .also { logger.info("Current document: ${serverDocumentManager.getDocument(documentId)}") }
+    ): PlainTextSingleCharacterOperation {
+        logger.debug(
+            """Operation received: 
+                $operation
+                Document: ${serverDocumentManager.getDocument(documentId)}
+            """
+        )
+        return serverDocumentManager.receiveOperation(documentId, operation).also {
+            logger.debug(
+                """Transformed operation: 
+                    $it
+                    Document after operation applied: ${serverDocumentManager.getDocument(documentId)}
+                """
+            )
+        }
+    }
 
 }
