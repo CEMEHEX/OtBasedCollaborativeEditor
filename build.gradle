@@ -85,7 +85,15 @@ kotlin {
 
 jvmJar {
     dependsOn(jsBrowserWebpack)
-    from(new File(jsBrowserWebpack.entry.name, jsBrowserWebpack.outputPath))
+    from(new File(jsBrowserWebpack.entry.name, jsBrowserWebpack.outputPath)) {
+        into 'static/js'
+    }
+}
+
+configure([jvmJar]) {
+    manifest{
+        attributes 'Main-Class':'ot.MainKt'
+    }
 }
 
 task run(type: JavaExec, dependsOn: [jvmJar]) {
