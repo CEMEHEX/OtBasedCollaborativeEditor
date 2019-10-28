@@ -1,0 +1,15 @@
+
+textarea {
+    display:block;
+    width:70%;
+    height:400px;
+    margin:0 auto;
+    resize:vertical;
+    border-width:2px;
+    border-radius:2px;
+    border-color: dimgrey;
+    font-size:18pt;
+    background: #221122;
+    color:darkgreen;
+    padding: 5px;
+}
