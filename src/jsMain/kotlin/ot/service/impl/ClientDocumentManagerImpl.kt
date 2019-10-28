@@ -1,7 +1,8 @@
-package ot.client
+package ot.service.impl
 
-import ot.client.command.OperationApplicationCommand
-import ot.client.fsm.ClientFSM
+import ot.command.OperationApplicationCommand
+import ot.fsm.ClientFSM
+import ot.service.ClientDocumentManager
 import ot.service.Operation
 
 class ClientDocumentManagerImpl<T, O : Operation<T>>(

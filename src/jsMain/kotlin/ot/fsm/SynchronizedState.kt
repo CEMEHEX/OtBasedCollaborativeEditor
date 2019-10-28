@@ -1,8 +1,8 @@
-package ot.client.fsm
+package ot.fsm
 
-import ot.client.command.ApplyOperationLocally
-import ot.client.command.OperationApplicationCommand
-import ot.client.command.SendOperationToServer
+import ot.command.ApplyOperationLocally
+import ot.command.OperationApplicationCommand
+import ot.command.SendOperationToServer
 import ot.service.Operation
 import ot.service.OperationsManager
 
