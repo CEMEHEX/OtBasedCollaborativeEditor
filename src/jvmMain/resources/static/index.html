@@ -9,8 +9,45 @@
 <noscript>
     <h2>Sorry! Your browser doesn't support Javascript</h2>
 </noscript>
-<textarea id="textarea"></textarea>
+<!-- HEADER -->
+<div id="header">
+    <div class="content">
+        <div id="top_menu">
+            <ul>
+                <li class="title">Title</li>
+            </ul>
+        </div>
 
+        <br class="clear"/>
+    </div>
+</div>
+<!-- /HEADER -->
+<!-- MAIN -->
+<div id="main">
+    <div class="content">
+
+        <textarea id="textarea"></textarea>
+
+        <form action="" method="post" id="save-doc-form">
+            <p>
+                <label for="title-form-field">Title:</label>
+                <input type="text" name="title" id="title-form-field" value="" class="field"/>
+                <input type="submit" class="submitter" id="submit" value="Save"/>
+            </p>
+        </form>
+
+        <div class="list">
+            <h4>My documents</h4>
+            <ul>
+                <li>My document title 1</li>
+                <li>My document title 2</li>
+                <li>My document title 3</li>
+            </ul>
+        </div>
+
+    </div>
+</div>
+<!-- /MAIN -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/sockjs-client/1.1.4/sockjs.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/stomp.js/2.3.3/stomp.min.js"></script>
 <script src="/js/diff_match_patch.js"></script>
