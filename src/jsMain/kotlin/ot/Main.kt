@@ -1,41 +1,20 @@
 package ot
 
-import org.w3c.dom.HTMLTextAreaElement
 import ot.command.ApplyOperationLocally
 import ot.command.NoCommand
 import ot.command.OperationApplicationCommand
 import ot.command.SendOperationToServer
-import ot.external.SockJS
-import ot.external.Stomp
-import ot.external.diff_match_patch
-import ot.fsm.ClientFSM
-import ot.fsm.ClientFSMImpl
-import ot.fsm.SynchronizedState
-import ot.service.ClientDocumentManager
-import ot.service.impl.*
-import kotlin.browser.document
-
-fun <T> T?.validateNotNull(): T =
-    this ?: throw IllegalStateException("required html elements not initialized")
-
-val textAreaElement = document.querySelector("textarea").validateNotNull() as HTMLTextAreaElement
-
-val diffMatchPatch = diff_match_patch()
-val idGenerator = LongSequentialIdGenerator()
-val diffToOperationsDecomposer = PlainTextDiffToSingleCharOperationsDecomposer(diffMatchPatch, idGenerator)
-
-val operationSerializer = PlainTextSingleCharacterOperationJsonSerializer()
-val socket = SockJS("/ws")
-val stompClient = Stomp.over(socket)
-
-val operationsManager = PlainTextOperationsManager()
-val clientFsm: ClientFSM<String, PlainTextSingleCharacterOperation> =
-    ClientFSMImpl<String, PlainTextSingleCharacterOperation>(0)
-        .apply { state = SynchronizedState(this, operationsManager) }
-
-val clientDocumentManager: ClientDocumentManager<String, PlainTextSingleCharacterOperation> = ClientDocumentManagerImpl(
-    clientFsm
-)
+import ot.config.DemoAppConfig.clientDocumentManager
+import ot.config.DemoAppConfig.diffToOperationsDecomposer
+import ot.config.DemoAppConfig.operationDeserializer
+import ot.config.DemoAppConfig.operationSerializer
+import ot.config.DemoAppConfig.stompClient
+import ot.config.DemoAppConfig.textAreaElement
+import ot.service.impl.DeleteOperation
+import ot.service.impl.IdentityOperation
+import ot.service.impl.InsertOperation
+import ot.service.impl.PlainTextSingleCharacterOperation
+import kotlin.js.Json
 
 fun onOperationApplicationCommand(
     operationApplicationCommand: OperationApplicationCommand<PlainTextSingleCharacterOperation>
@@ -53,7 +32,8 @@ fun setupWebSocket() {
     }
 
     fun onMessageReceived(payload: dynamic) {
-        val operation = JSON.parse<PlainTextSingleCharacterOperation>(payload.body as String)
+        val operationJson = JSON.parse<Json>(payload.body as String)
+        val operation = operationDeserializer.deserialize(operationJson)
         console.log("Message received: ${JSON.stringify(operation)}")
         onOperationApplicationCommand(clientDocumentManager.processRemoteOperation(operation))
     }
@@ -84,10 +64,6 @@ fun transformCursorPosition(
     is InsertOperation -> if (operation.position <= cursorPosition) cursorPosition + 1 else cursorPosition
     is DeleteOperation -> if (operation.position < cursorPosition) cursorPosition - 1 else cursorPosition
     is IdentityOperation -> cursorPosition
-    else -> {
-        console.log("WTF operation: ${JSON.stringify(operation)}")
-        throw IllegalStateException()
-    }
 }
 
 fun applyOperationLocally(operation: PlainTextSingleCharacterOperation) {
@@ -111,7 +87,7 @@ fun setupTextArea() {
         val test = operations.fold(previousTextAreaData) { result, current -> current.applyTo(result) }
         console.log("Test: $test")
         previousTextAreaData = textAreaElement.value
-        operations.forEach { sendOperation(it) }
+        operations.forEach { onOperationApplicationCommand(clientDocumentManager.processLocalOperation(it)) }
         Unit
     }
 }
