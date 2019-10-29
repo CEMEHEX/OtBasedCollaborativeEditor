@@ -6,19 +6,19 @@ import ot.service.OperationDeserializer
 class PlainTextSingleCharacterOperationJsonDeserializer :
     OperationDeserializer<PlainTextSingleCharacterOperation, dynamic> {
     override fun deserialize(rawData: dynamic): PlainTextSingleCharacterOperation {
-        console.log("DESERIALIZE: (type: ${rawData.type}, id: ${rawData.id}, position: ${rawData.position}, symbol: ${rawData.symbol})}")
+        console.log("DESERIALIZE: (type: ${rawData.type}, id: ${rawData.uuid}, position: ${rawData.position}, symbol: ${rawData.symbol})}")
         return when (rawData.type as String) {
             "INSERT" -> InsertOperation(
-                rawData.id.toString().toLong(),
+                rawData.uuid.toString(),
                 rawData.position as Int,
                 rawData.symbol.toString()[0]
             )
             "DELETE" -> DeleteOperation(
-                rawData.id.toString().toLong(),
+                rawData.uuid.toString(),
                 rawData.position as Int,
                 rawData.symbol.toString()[0]
             )
-            "IDENTITY" -> IdentityOperation(rawData.id.toString().toLong())
+            "IDENTITY" -> IdentityOperation(rawData.uuid.toString())
             else -> throw IllegalArgumentException("Invalid operation type: ${rawData.type}")
         }
     }

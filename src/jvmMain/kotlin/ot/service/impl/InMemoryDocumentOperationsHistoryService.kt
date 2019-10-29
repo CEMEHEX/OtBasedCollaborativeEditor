@@ -5,17 +5,17 @@ import ot.service.Operation
 import java.util.concurrent.ConcurrentMap
 
 class InMemoryDocumentOperationsHistoryService<O : Operation<*>>(
-    private val operations: ConcurrentMap<Long, List<O>>
+    private val operations: ConcurrentMap<String, List<O>>
 ) : DocumentOperationsHistoryService<O> {
 
-    override fun operationsCount(documentId: Long): Int = operations[documentId]?.size ?: 0
+    override fun operationsCount(documentUUID: String): Int = operations[documentUUID]?.size ?: 0
 
-    override fun addOperation(documentId: Long, operation: O) {
-        operations[documentId]?.plus(operation) ?: operations.put(documentId, listOf(operation))
+    override fun addOperation(documentUUID: String, operation: O) {
+        operations[documentUUID]?.plus(operation) ?: operations.put(documentUUID, listOf(operation))
     }
 
     override fun getConcurrentOperations(
-        documentId: Long,
+        documentUUID: String,
         revision: Int
-    ): Collection<O> = operations[documentId]?.drop(revision) ?: emptyList()
+    ): Collection<O> = operations[documentUUID]?.drop(revision) ?: emptyList()
 }

@@ -9,26 +9,26 @@ class PlainTextSingleCharacterOperationJsonSerializer :
 
     override fun serialize(operation: PlainTextSingleCharacterOperation): Json = when (operation) {
         is InsertOperation -> {
-            val (id, position, symbol) = operation
+            val (uuid, position, symbol) = operation
             json(
                 "type" to "INSERT",
-                "id" to id.toString(),
+                "uuid" to uuid,
                 "position" to position,
                 "symbol" to symbol.toString()
             )
         }
         is DeleteOperation -> {
-            val (id, position, symbol) = operation
+            val (uuid, position, symbol) = operation
             json(
                 "type" to "DELETE",
-                "id" to id.toString(),
+                "uuid" to uuid,
                 "position" to position,
                 "symbol" to symbol.toString()
             )
         }
         is IdentityOperation -> json(
             "type" to "IDENTITY",
-            "id" to operation.id.toString()
+            "uuid" to operation.uuid
         )
 
     }

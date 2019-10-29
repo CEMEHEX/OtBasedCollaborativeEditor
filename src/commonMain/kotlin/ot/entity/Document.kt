@@ -6,7 +6,7 @@ package ot.entity
  * @param T content type
  */
 interface Document<T> {
-    val id: Long
+    val uuid: String
     val revision: Int
     val content: T
 }

@@ -1,12 +1,15 @@
 package ot.service.impl
 
+import ot.service.IdGenerator
 import ot.service.OperationsManager
 
-class PlainTextOperationsManager : OperationsManager<PlainTextSingleCharacterOperation> {
+class PlainTextOperationsManager(
+    private val idGenerator: IdGenerator<String>
+) : OperationsManager<PlainTextSingleCharacterOperation> {
 
     override fun transformAgainst(
-            operation1: PlainTextSingleCharacterOperation,
-            operation2: PlainTextSingleCharacterOperation
+        operation1: PlainTextSingleCharacterOperation,
+        operation2: PlainTextSingleCharacterOperation
     ): PlainTextSingleCharacterOperation = when (operation1) {
         is InsertOperation -> when (operation2) {
             is InsertOperation -> transformInsertAgainstInsert(operation1, operation2)
@@ -21,18 +24,18 @@ class PlainTextOperationsManager : OperationsManager<PlainTextSingleCharacterOpe
         is IdentityOperation -> operation1
     }
 
-    // TODO id must change, use id generator or something
-    override fun invert(operation: PlainTextSingleCharacterOperation): PlainTextSingleCharacterOperation = when(operation) {
-        is InsertOperation -> {
-            val (id, position, symbol) = operation
-            DeleteOperation(id, position, symbol) // TODO
+    override fun invert(operation: PlainTextSingleCharacterOperation): PlainTextSingleCharacterOperation =
+        when (operation) {
+            is InsertOperation -> {
+                val (_, position, symbol) = operation
+                DeleteOperation(idGenerator.generateId(), position, symbol)
+            }
+            is DeleteOperation -> {
+                val (_, position, symbol) = operation
+                InsertOperation(idGenerator.generateId(), position, symbol)
+            }
+            is IdentityOperation -> IdentityOperation(idGenerator.generateId())
         }
-        is DeleteOperation -> {
-            val (id, position, symbol) = operation
-            InsertOperation(id, position, symbol) // TODO
-        }
-        is IdentityOperation -> operation // TODO
-    }
 
     private fun transformInsertAgainstInsert(
         operation1: InsertOperation,
@@ -47,7 +50,7 @@ class PlainTextOperationsManager : OperationsManager<PlainTextSingleCharacterOpe
         operation2: DeleteOperation
     ): PlainTextSingleCharacterOperation = when {
         operation1.position <= operation2.position -> operation1
-        else -> InsertOperation(operation1.id,operation1.position - 1, operation1.symbol)
+        else -> InsertOperation(operation1.uuid, operation1.position - 1, operation1.symbol)
     }
 
     private fun transformDeleteAgainstInsert(
@@ -64,7 +67,7 @@ class PlainTextOperationsManager : OperationsManager<PlainTextSingleCharacterOpe
     ): PlainTextSingleCharacterOperation = when {
         operation1.position < operation2.position -> operation1
         operation1.position > operation2.position -> operation1.copy(position = operation1.position - 1)
-        else -> IdentityOperation(operation1.id)
+        else -> IdentityOperation(operation1.uuid)
     }
 
 }

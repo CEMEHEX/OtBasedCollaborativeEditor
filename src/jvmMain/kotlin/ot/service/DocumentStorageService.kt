@@ -9,7 +9,7 @@ import ot.entity.Document
  */
 interface DocumentStorageService<D : Document<*>> {
 
-    fun getDocumentById(id: Long): D
+    fun getDocumentByUUID(uuid: String): D
 
     fun save(document: D)
 

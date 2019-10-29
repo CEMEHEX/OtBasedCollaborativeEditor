@@ -11,27 +11,27 @@ class ServerDocumentManagerImpl<T, O : Operation<T>, D : Document<T>>(
     private val documentUpdater: DocumentUpdater<T, D>
 ) : ServerDocumentManager<T, O, D> {
 
-    override fun getRevision(documentId: Long) = operationsStorage.operationsCount(documentId)
+    override fun getRevision(documentUUID: String) = operationsStorage.operationsCount(documentUUID)
 
-    override fun getDocument(documentId: Long): D = documentStorageService.getDocumentById(documentId)
+    override fun getDocument(documentUUID: String): D = documentStorageService.getDocumentByUUID(documentUUID)
 
     override fun receiveOperation(
-        documentId: Long,
+        documentUUID: String,
         revision: Int,
         operation: O
     ): O {
-        val concurrentOperations = operationsStorage.getConcurrentOperations(documentId, revision)
+        val concurrentOperations = operationsStorage.getConcurrentOperations(documentUUID, revision)
         // transform received operation against each concurrent operation
         val transformedOperation = concurrentOperations.transformAgainstEach(operation, operationsManager)
-        val document = getDocument(documentId)
+        val document = getDocument(documentUUID)
         val updatedContent = transformedOperation.applyTo(document.content)
         val updatedDocument = documentUpdater.updateContentAndRevision(
             document = document,
             content = updatedContent,
-            revision = getRevision(documentId) + 1
+            revision = getRevision(documentUUID) + 1
         )
         documentStorageService.save(updatedDocument)
-        operationsStorage.addOperation(documentId, transformedOperation)
+        operationsStorage.addOperation(documentUUID, transformedOperation)
         return transformedOperation
     }
 

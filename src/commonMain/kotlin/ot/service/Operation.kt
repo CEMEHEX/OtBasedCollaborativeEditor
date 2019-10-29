@@ -10,7 +10,7 @@ interface Operation<T> {
     /**
      * Unique identifier, can be used for matching operations
      */
-    val id: Long
+    val uuid: String
 
     /**
      * Applies operation to content

@@ -12,13 +12,13 @@ interface ServerDocumentManager<T, O : Operation<T>, D> {
     /**
      * Transforms operation from client against concurrent operations and applies it to document
      *
-     * @param documentId document id
+     * @param documentUUID document id
      * @param revision client document revision
      * @param operation operation from client
      * @return transformed operation
      */
     fun receiveOperation(
-        documentId: Long,
+        documentUUID: String,
         revision: Int,
         operation: O
     ): O
@@ -26,11 +26,11 @@ interface ServerDocumentManager<T, O : Operation<T>, D> {
     /**
      * @return latest version of document
      */
-    fun getDocument(documentId: Long): D
+    fun getDocument(documentUUID: String): D
 
     /**
      * @return latest document revision
      */
-    fun getRevision(documentId: Long): Int
+    fun getRevision(documentUUID: String): Int
 
 }

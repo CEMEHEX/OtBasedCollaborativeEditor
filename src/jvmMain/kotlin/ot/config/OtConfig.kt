@@ -11,15 +11,22 @@ import java.util.concurrent.ConcurrentHashMap
 class OtConfig {
 
     @Bean
-    fun plainTextSingleCharacterOperationsManager(): PlainTextOperationsManager = PlainTextOperationsManager()
+    fun uuidGenerator(): IdGenerator<String> = UuidGenerator()
 
     @Bean
-    fun plainTextDocumentStorage(): DocumentStorageService<PlainTextDocument> =
-        InMemoryPlainTextDocumentStorageService(
-            ConcurrentHashMap<Long, PlainTextDocument>().apply {
-                put(1L, PlainTextDocument(1, 0, ""))
+    fun plainTextSingleCharacterOperationsManager(
+        uuidGenerator: IdGenerator<String>
+    ): PlainTextOperationsManager = PlainTextOperationsManager(uuidGenerator)
+
+    @Bean
+    fun plainTextDocumentStorage(): DocumentStorageService<PlainTextDocument> {
+        val uuid = "1"
+        return InMemoryPlainTextDocumentStorageService(
+            ConcurrentHashMap<String, PlainTextDocument>().apply {
+                put(uuid, PlainTextDocument(uuid, 0, ""))
             }
         )
+    }
 
     @Bean
     fun plainTextDocumentOperationsHistoryManager(

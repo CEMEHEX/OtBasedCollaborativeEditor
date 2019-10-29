@@ -30,7 +30,7 @@ class AwaitConfirmationState<T, O : Operation<T>>(
     }
 
     override fun processRemoteOperation(operation: O): OperationApplicationCommand<O> = when {
-        operation.id == pendingOperations[0].id -> {
+        operation.uuid == pendingOperations[0].uuid -> {
             console.log("AwaitConfirmation state: processing remote operation from this client $operation")
             val restOperations = pendingOperations.drop(1)
             when {

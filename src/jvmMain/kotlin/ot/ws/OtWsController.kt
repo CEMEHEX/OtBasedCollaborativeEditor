@@ -21,11 +21,11 @@ class OtWsController(
     @Qualifier("SingleThreadExecutor") private val singleThreadExecutor: ExecutorService
 ) {
 
-    @MessageMapping("/document/{documentId}/revision/{revision}")
-    @SendTo("/topic/public/operation/{documentId}")
+    @MessageMapping("/document/{documentUUID}/revision/{revision}")
+    @SendTo("/topic/public/operation/{documentUUID}")
     fun sendMessage(
         @Payload operation: PlainTextSingleCharacterOperation,
-        @DestinationVariable documentId: Long,
+        @DestinationVariable documentUUID: String,
         @DestinationVariable revision: Int
     ): PlainTextSingleCharacterOperation =
         singleThreadExecutor.submit<PlainTextSingleCharacterOperation> {
@@ -33,14 +33,14 @@ class OtWsController(
                 """Operation received:
                 $operation
                 Client revision: $revision
-                Document: ${serverDocumentManager.getDocument(documentId)}
+                Document: ${serverDocumentManager.getDocument(documentUUID)}
             """
             )
-            return@submit serverDocumentManager.receiveOperation(documentId, revision, operation).also {
+            return@submit serverDocumentManager.receiveOperation(documentUUID, revision, operation).also {
                 logger.debug(
                     """Transformed operation:
                         $it
-                        Document after operation applied: ${serverDocumentManager.getDocument(documentId)}
+                        Document after operation applied: ${serverDocumentManager.getDocument(documentUUID)}
                     """
                 )
             }

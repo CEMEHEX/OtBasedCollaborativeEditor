@@ -12,10 +12,10 @@ class PlainTextDocumentDeserializer : StdDeserializer<PlainTextDocument>(
 
     override fun deserialize(jp: JsonParser, ctxt: DeserializationContext): PlainTextDocument {
         val node: JsonNode = jp.codec.readTree(jp)
-        val id = node.get("id").asLong()
+        val uuid = node.get("uuid").asText()
         val revision = node.get("revision").asInt()
         val content: String = node.get("content").asText()
 
-        return PlainTextDocument(id, revision, content)
+        return PlainTextDocument(uuid, revision, content)
     }
 }

@@ -15,7 +15,7 @@ sealed class PlainTextSingleCharacterOperation : Operation<String>
  * @property symbol symbol to insert
  */
 data class InsertOperation(
-    override val id: Long,
+    override val uuid: String,
     val position: Int,
     val symbol: Char
 ) : PlainTextSingleCharacterOperation() {
@@ -34,7 +34,7 @@ data class InsertOperation(
  * @property symbol symbol to delete
  */
 data class DeleteOperation(
-    override val id: Long,
+    override val uuid: String,
     val position: Int,
     val symbol: Char
 ) : PlainTextSingleCharacterOperation() {
@@ -54,7 +54,7 @@ data class DeleteOperation(
  *
  */
 data class IdentityOperation(
-    override val id: Long
+    override val uuid: String
 ) : PlainTextSingleCharacterOperation() {
     override fun applyTo(content: String): String = content
 }

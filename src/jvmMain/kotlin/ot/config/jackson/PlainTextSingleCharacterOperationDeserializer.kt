@@ -28,14 +28,14 @@ class PlainTextSingleCharacterOperationDeserializer
     override fun deserialize(jp: JsonParser, ctxt: DeserializationContext): PlainTextSingleCharacterOperation {
         val node: JsonNode = jp.codec.readTree(jp)
         val type: String = node.get("type").asText()
-        val id = node.get("id").asLong()
+        val uuid = node.get("uuid").asText()
 
         return when (type) {
             "INSERT" -> parsePositionAndSymbol(node, jp)
-                .let { (position, symbol) -> InsertOperation(id, position, symbol) }
+                .let { (position, symbol) -> InsertOperation(uuid, position, symbol) }
             "DELETE" -> parsePositionAndSymbol(node, jp)
-                .let { (position, symbol) -> DeleteOperation(id, position, symbol) }
-            "IDENTITY" -> IdentityOperation(id)
+                .let { (position, symbol) -> DeleteOperation(uuid, position, symbol) }
+            "IDENTITY" -> IdentityOperation(uuid)
             else -> throw JsonParseException(jp, "Invalid operation type: $type")
         }
     }

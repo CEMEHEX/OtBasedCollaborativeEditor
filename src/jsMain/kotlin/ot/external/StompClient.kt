@@ -18,4 +18,6 @@ external class StompClient {
         unknown: dynamic,
         payload: String
     )
+
+    fun disconnect(onDisconnected: (Unit) -> Unit)
 }

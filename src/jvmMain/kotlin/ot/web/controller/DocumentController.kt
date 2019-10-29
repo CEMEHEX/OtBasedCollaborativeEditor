@@ -11,8 +11,8 @@ class DocumentController(
     private val documentStorageService: DocumentStorageService<PlainTextDocument>
 ) {
     @GetMapping("{documentId}")
-    fun getDocument(@PathVariable documentId: Long): Document<String> =
-        documentStorageService.getDocumentById(documentId)
+    fun getDocument(@PathVariable documentId: String): Document<String> =
+        documentStorageService.getDocumentByUUID(documentId)
 
 
     @PostMapping

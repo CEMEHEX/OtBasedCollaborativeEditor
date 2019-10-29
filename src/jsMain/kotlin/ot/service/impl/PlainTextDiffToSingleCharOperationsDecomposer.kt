@@ -6,7 +6,7 @@ import ot.service.IdGenerator
 
 class PlainTextDiffToSingleCharOperationsDecomposer(
     private val diffMatchPatch: diff_match_patch,
-    private val idGenerator: IdGenerator<Long>
+    private val idGenerator: IdGenerator<String>
 ) : DiffToOperationsDecomposer<String, PlainTextSingleCharacterOperation> {
 
     override fun diffToOperationList(
