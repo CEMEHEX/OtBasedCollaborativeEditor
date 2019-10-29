@@ -14,6 +14,9 @@ class DocumentController(
     fun getDocument(@PathVariable documentId: String): Document<String> =
         documentStorageService.getDocumentByUUID(documentId)
 
+    @GetMapping("all")
+    fun getDocumentsList() : List<PlainTextDocument> = documentStorageService.getDocumentsList()
+
 
     @PostMapping
     fun postDocument(@RequestBody document: PlainTextDocument) = documentStorageService.save(document)

@@ -8,11 +8,12 @@ import java.util.concurrent.ConcurrentMap
 class InMemoryPlainTextDocumentStorageService(
         private val documents: ConcurrentMap<String, PlainTextDocument>
 ) : DocumentStorageService<PlainTextDocument> {
-
     override fun getDocumentByUUID(uuid: String): PlainTextDocument =
             documents[uuid] ?: throw DocumentNotFoundException(uuid)
 
     override fun save(document: PlainTextDocument) {
         documents[document.uuid] = document
     }
+
+    override fun getDocumentsList(): List<PlainTextDocument> = documents.values.toList()
 }

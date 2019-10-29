@@ -15,7 +15,8 @@ class PlainTextDocumentDeserializer : StdDeserializer<PlainTextDocument>(
         val uuid = node.get("uuid").asText()
         val revision = node.get("revision").asInt()
         val content: String = node.get("content").asText()
+        val title: String = node.get("title").asText()
 
-        return PlainTextDocument(uuid, revision, content)
+        return PlainTextDocument(uuid, revision, content, title)
     }
 }

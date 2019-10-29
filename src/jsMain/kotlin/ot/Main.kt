@@ -1,19 +1,23 @@
 package ot
 
+import org.w3c.xhr.XMLHttpRequest
 import ot.command.ApplyOperationLocally
 import ot.command.NoCommand
 import ot.command.OperationApplicationCommand
 import ot.command.SendOperationToServer
 import ot.config.DemoAppConfig.clientDocumentManager
 import ot.config.DemoAppConfig.diffToOperationsDecomposer
+import ot.config.DemoAppConfig.documentsListElement
 import ot.config.DemoAppConfig.operationDeserializer
 import ot.config.DemoAppConfig.operationSerializer
 import ot.config.DemoAppConfig.stompClient
 import ot.config.DemoAppConfig.textAreaElement
+import ot.entity.PlainTextDocument
 import ot.service.impl.DeleteOperation
 import ot.service.impl.IdentityOperation
 import ot.service.impl.InsertOperation
 import ot.service.impl.PlainTextSingleCharacterOperation
+import kotlin.browser.document
 import kotlin.js.Json
 
 fun onOperationApplicationCommand(
@@ -92,7 +96,22 @@ fun setupTextArea() {
     }
 }
 
+fun initializeDocumentsList() {
+    console.log(documentsListElement.nodeName)
+    val xhr = XMLHttpRequest()
+    xhr.open("GET", "document/all", false)
+    xhr.send()
+    val documents = JSON.parse<Array<PlainTextDocument>>(xhr.responseText)
+    documents.forEach {
+        val li = document.createElement("li")
+        li.appendChild(document.createTextNode(it.title))
+        li.setAttribute("id", it.uuid)
+        documentsListElement.appendChild(li)
+    }
+}
+
 fun main() {
+    initializeDocumentsList()
     setupTextArea()
     setupWebSocket()
 }

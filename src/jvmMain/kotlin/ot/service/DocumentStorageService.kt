@@ -13,4 +13,6 @@ interface DocumentStorageService<D : Document<*>> {
 
     fun save(document: D)
 
+    fun getDocumentsList(): List<D>
+
 }
