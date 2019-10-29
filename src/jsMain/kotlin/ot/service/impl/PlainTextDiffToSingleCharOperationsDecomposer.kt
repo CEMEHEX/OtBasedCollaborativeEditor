@@ -1,9 +1,8 @@
-package ot.service
+package ot.service.impl
 
 import ot.external.diff_match_patch
-import ot.service.impl.DeleteOperation
-import ot.service.impl.InsertOperation
-import ot.service.impl.PlainTextSingleCharacterOperation
+import ot.service.DiffToOperationsDecomposer
+import ot.service.IdGenerator
 
 class PlainTextDiffToSingleCharOperationsDecomposer(
     private val diffMatchPatch: diff_match_patch,

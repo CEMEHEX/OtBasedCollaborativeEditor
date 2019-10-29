@@ -1,13 +1,13 @@
 package ot
 
 import org.w3c.dom.HTMLTextAreaElement
-import org.w3c.dom.events.Event
 import ot.external.SockJS
 import ot.external.Stomp
 import ot.external.diff_match_patch
-import ot.service.PlainTextDiffToSingleCharOperationsDecomposer
 import ot.service.impl.LongSequentialIdGenerator
+import ot.service.impl.PlainTextDiffToSingleCharOperationsDecomposer
 import ot.service.impl.PlainTextSingleCharacterOperation
+import ot.service.impl.PlainTextSingleCharacterOperationJsonSerializer
 import kotlin.browser.document
 
 fun <T> T?.validateNotNull(): T =
@@ -17,11 +17,9 @@ val textAreaElement = document.querySelector("textarea").validateNotNull() as HT
 
 fun main() {
     val diffMatchPatch = diff_match_patch()
-    diffMatchPatch.diff_main("abc", "bcx").forEach { diffEntry ->
-        console.log("(${diffEntry[0]}, ${diffEntry[1]})")
-    }
     val idGenerator = LongSequentialIdGenerator()
     val diffToOperationsDecomposer = PlainTextDiffToSingleCharOperationsDecomposer(diffMatchPatch, idGenerator)
+    val operationSerializer = PlainTextSingleCharacterOperationJsonSerializer()
 
 
     val socket = SockJS("/ws")
@@ -31,11 +29,10 @@ fun main() {
         console.error("Websocket client error: $error")
     }
 
-    fun sendMessage(event: Event) {
-        val chatMessage = JSON.parse<PlainTextSingleCharacterOperation>(TODO())
-        stompClient.send("/app/1/operation", {}, JSON.stringify(chatMessage))
-
-        event.preventDefault()
+    fun sendOperation(operation: PlainTextSingleCharacterOperation) {
+        val serializedMessage = operationSerializer.serialize(operation)
+        console.log("Sending message: ${JSON.stringify(serializedMessage)}")
+        stompClient.send("/app/1/operation", {}, JSON.stringify(serializedMessage))
     }
 
     fun onMessageReceived(payload: dynamic) {
@@ -53,8 +50,12 @@ fun main() {
         val cur = textAreaElement.value
         console.log("Prev text: $previousTextAreaData")
         console.log("Cur text: $cur")
-        console.log("Operations: ${diffToOperationsDecomposer.diffToOperationList(previousTextAreaData, cur)}")
+        val operations = diffToOperationsDecomposer.diffToOperationList(previousTextAreaData, cur)
+        console.log("Operations: $operations")
+        val test = operations.fold(previousTextAreaData) { result, current -> current.applyTo(result) }
+        console.log("Test: $test")
         previousTextAreaData = textAreaElement.value
+        operations.forEach { sendOperation(it) }
         Unit
     }
 
