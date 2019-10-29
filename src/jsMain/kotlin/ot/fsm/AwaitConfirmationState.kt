@@ -24,12 +24,14 @@ class AwaitConfirmationState<T, O : Operation<T>>(
     ) : this(clientFSM, operationsManager, listOf(pendingOperation))
 
     override fun processLocalOperation(operation: O): OperationApplicationCommand<O> {
+        console.log("AwaitConfirmation state: processing local operation $operation")
         clientFSM.state = addOperation(operation)
         return NoCommand()
     }
 
     override fun processRemoteOperation(operation: O): OperationApplicationCommand<O> = when {
         operation.id == pendingOperations[0].id -> {
+            console.log("AwaitConfirmation state: processing remote operation from this client $operation")
             val restOperations = pendingOperations.drop(1)
             when {
                 restOperations.isEmpty() -> {
@@ -43,6 +45,7 @@ class AwaitConfirmationState<T, O : Operation<T>>(
             }
         }
         else -> {
+            console.log("AwaitConfirmation state: processing remote operation from other client $operation")
             val transformedPendingOperations = pendingOperations.map { pendingOperation ->
                 operationsManager.transformAgainst(pendingOperation, operation)
             }
