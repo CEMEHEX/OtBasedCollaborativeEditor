@@ -11,7 +11,7 @@ class InMemoryDocumentOperationsHistoryService<O : Operation<*>>(
     override fun operationsCount(documentUUID: String): Int = operations[documentUUID]?.size ?: 0
 
     override fun addOperation(documentUUID: String, operation: O) {
-        operations[documentUUID]?.plus(operation) ?: operations.put(documentUUID, listOf(operation))
+        operations.compute(documentUUID) {_, list -> list?.plus(operation) ?: emptyList() }
     }
 
     override fun getConcurrentOperations(
