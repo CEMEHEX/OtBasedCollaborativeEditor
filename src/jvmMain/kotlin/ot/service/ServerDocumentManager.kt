@@ -10,12 +10,18 @@ package ot.service
 interface ServerDocumentManager<T, O : Operation<T>, D> {
 
     /**
-     * Process operation from client
+     * Transforms operation from client against concurrent operations and applies it to document
      *
+     * @param documentId document id
+     * @param revision client document revision
      * @param operation operation from client
      * @return transformed operation
      */
-    fun receiveOperation(documentId: Long, operation: O): O
+    fun receiveOperation(
+        documentId: Long,
+        revision: Int,
+        operation: O
+    ): O
 
     /**
      * @return latest version of document

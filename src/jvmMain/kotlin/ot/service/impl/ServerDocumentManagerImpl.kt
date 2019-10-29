@@ -1,13 +1,8 @@
 package ot.service.impl
 
-import ot.service.Operation
-import ot.service.OperationsManager
-import ot.service.DocumentOperationsHistoryService
-import ot.service.DocumentStorageService
-import ot.service.DocumentUpdater
-import ot.service.ServerDocumentManager
-import ot.util.transformAgainstEach
 import ot.entity.Document
+import ot.service.*
+import ot.util.transformAgainstEach
 
 class ServerDocumentManagerImpl<T, O : Operation<T>, D : Document<T>>(
     private val operationsStorage: DocumentOperationsHistoryService<O>,
@@ -20,8 +15,12 @@ class ServerDocumentManagerImpl<T, O : Operation<T>, D : Document<T>>(
 
     override fun getDocument(documentId: Long): D = documentStorageService.getDocumentById(documentId)
 
-    override fun receiveOperation(documentId: Long, operation: O): O {
-        val concurrentOperations = operationsStorage.getConcurrentOperations(documentId, operation.revision)
+    override fun receiveOperation(
+        documentId: Long,
+        revision: Int,
+        operation: O
+    ): O {
+        val concurrentOperations = operationsStorage.getConcurrentOperations(documentId, revision)
         // transform received operation against each concurrent operation
         val transformedOperation = concurrentOperations.transformAgainstEach(operation, operationsManager)
         val document = getDocument(documentId)
@@ -32,11 +31,8 @@ class ServerDocumentManagerImpl<T, O : Operation<T>, D : Document<T>>(
             revision = getRevision(documentId) + 1
         )
         documentStorageService.save(updatedDocument)
-        val updatedOperation = operationsManager.changeRevision(
-            transformedOperation,
-            getRevision(documentId)
-        )
-        operationsStorage.addOperation(documentId, updatedOperation)
-        return updatedOperation
+        operationsStorage.addOperation(documentId, transformedOperation)
+        return transformedOperation
     }
+
 }

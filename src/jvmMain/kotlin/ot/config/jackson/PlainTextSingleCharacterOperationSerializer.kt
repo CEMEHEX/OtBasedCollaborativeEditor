@@ -29,7 +29,6 @@ class PlainTextSingleCharacterOperationSerializer
         jgen.writeStartObject()
         jgen.writeStringField("type", "INSERT")
         jgen.writeNumberField("id", value.id)
-        jgen.writeNumberField("revision", value.revision)
         jgen.writeNumberField("position", value.position)
         jgen.writeStringField("symbol", value.symbol.toString())
         jgen.writeEndObject()
@@ -42,7 +41,6 @@ class PlainTextSingleCharacterOperationSerializer
         jgen.writeStartObject()
         jgen.writeStringField("type", "DELETE")
         jgen.writeNumberField("id", value.id)
-        jgen.writeNumberField("revision", value.revision)
         jgen.writeNumberField("position", value.position)
         jgen.writeStringField("symbol", value.symbol.toString())
         jgen.writeEndObject()
@@ -55,7 +53,6 @@ class PlainTextSingleCharacterOperationSerializer
         jgen.writeStartObject()
         jgen.writeStringField("type", "IDENTITY")
         jgen.writeNumberField("id", value.id)
-        jgen.writeNumberField("revision", value.revision)
         jgen.writeEndObject()
     }
 }

@@ -15,24 +15,16 @@ fun <T> T?.validateNotNull(): T =
 
 val textAreaElement = document.querySelector("textarea").validateNotNull() as HTMLTextAreaElement
 
-fun main() {
-    val diffMatchPatch = diff_match_patch()
-    val idGenerator = LongSequentialIdGenerator()
-    val diffToOperationsDecomposer = PlainTextDiffToSingleCharOperationsDecomposer(diffMatchPatch, idGenerator)
-    val operationSerializer = PlainTextSingleCharacterOperationJsonSerializer()
+val diffMatchPatch = diff_match_patch()
+val idGenerator = LongSequentialIdGenerator()
+val diffToOperationsDecomposer = PlainTextDiffToSingleCharOperationsDecomposer(diffMatchPatch, idGenerator)
+val operationSerializer = PlainTextSingleCharacterOperationJsonSerializer()
+val socket = SockJS("/ws")
+val stompClient = Stomp.over(socket)
 
-
-    val socket = SockJS("/ws")
-    val stompClient = Stomp.over(socket)
-
+fun setupWebSocket() {
     fun onError(error: dynamic) {
         console.error("Websocket client error: $error")
-    }
-
-    fun sendOperation(operation: PlainTextSingleCharacterOperation) {
-        val serializedMessage = operationSerializer.serialize(operation)
-        console.log("Sending message: ${JSON.stringify(serializedMessage)}")
-        stompClient.send("/app/1/operation", {}, JSON.stringify(serializedMessage))
     }
 
     fun onMessageReceived(payload: dynamic) {
@@ -43,6 +35,21 @@ fun main() {
     fun onConnected() {
         // Subscribe to the Public Topic
         stompClient.subscribe("/topic/public/operation/1", ::onMessageReceived)
+    }
+
+    stompClient.connect(object {}, { onConnected() }, ::onError)
+}
+
+fun setupTextArea() {
+    var REMOVE_IT_tmp_revision = 0
+    fun sendOperation(operation: PlainTextSingleCharacterOperation) {
+        val serializedMessage = operationSerializer.serialize(operation)
+        console.log("Sending message: ${JSON.stringify(serializedMessage)}")
+        stompClient.send(
+            "/app/document/1/revision/${REMOVE_IT_tmp_revision++}",
+            {},
+            JSON.stringify(serializedMessage)
+        )
     }
 
     var previousTextAreaData: String = textAreaElement.value
@@ -58,7 +65,9 @@ fun main() {
         operations.forEach { sendOperation(it) }
         Unit
     }
+}
 
-    stompClient.connect(object {}, { onConnected() }, ::onError)
-
+fun main() {
+    setupTextArea()
+    setupWebSocket()
 }

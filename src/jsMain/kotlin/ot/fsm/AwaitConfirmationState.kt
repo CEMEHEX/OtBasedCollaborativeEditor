@@ -33,8 +33,8 @@ class AwaitConfirmationState<T, O : Operation<T>>(
             val restOperations = pendingOperations.drop(1)
             when {
                 restOperations.isEmpty() -> {
-                    clientFSM.state = SynchronizedState(clientFSM, operationsManager, operation.revision)
-                    NoCommand()
+                    clientFSM.state = SynchronizedState(clientFSM, operationsManager)
+                    NoCommand<O>()
                 }
                 else -> {
                     clientFSM.state = AwaitConfirmationState(clientFSM, operationsManager, restOperations)
@@ -52,5 +52,5 @@ class AwaitConfirmationState<T, O : Operation<T>>(
                 .transformAgainstEach(operation, operationsManager)
             ApplyOperationLocally(transformedOperationFromServer)
         }
-    }
+    }.also { ++clientFSM.revision }
 }

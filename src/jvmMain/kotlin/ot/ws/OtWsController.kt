@@ -10,6 +10,9 @@ import org.springframework.messaging.handler.annotation.SendTo
 import org.springframework.stereotype.Controller
 import ot.entity.PlainTextDocument
 import ot.service.ServerDocumentManager
+import ot.service.impl.DeleteOperation
+import ot.service.impl.IdentityOperation
+import ot.service.impl.InsertOperation
 import ot.service.impl.PlainTextSingleCharacterOperation
 import java.util.concurrent.ExecutorService
 
@@ -21,26 +24,37 @@ class OtWsController(
     @Qualifier("SingleThreadExecutor") private val singleThreadExecutor: ExecutorService
 ) {
 
-    @MessageMapping("/{documentId}/operation")
+    @MessageMapping("/document/{documentId}/revision/{revision}")
     @SendTo("/topic/public/operation/{documentId}")
     fun sendMessage(
         @Payload operation: PlainTextSingleCharacterOperation,
-        @DestinationVariable documentId: Long
-    ): PlainTextSingleCharacterOperation = singleThreadExecutor.submit<PlainTextSingleCharacterOperation> {
+        @DestinationVariable documentId: Long,
+        @DestinationVariable revision: Int
+    ): PlainTextSingleCharacterOperation = operation.also {
         logger.debug(
-            """Operation received: 
-                $operation
-                Document: ${serverDocumentManager.getDocument(documentId)}
-            """
+            when (it) {
+                is InsertOperation -> "ins (${it.id}, ${it.symbol})"
+                is DeleteOperation -> "del (${it.id}, ${it.symbol})"
+                is IdentityOperation -> "id"
+            }
         )
-        return@submit serverDocumentManager.receiveOperation(documentId, operation).also {
-            logger.debug(
-                """Transformed operation: 
-                        $it
-                        Document after operation applied: ${serverDocumentManager.getDocument(documentId)}
-                    """
-            )
-        }
-    }.get() // TODO use reactive websockets
+    }
+//        singleThreadExecutor.submit<PlainTextSingleCharacterOperation> {
+//        logger.debug(
+//            """Operation received:
+//                $operation
+//                Client revision: $revision
+//                Document: ${serverDocumentManager.getDocument(documentId)}
+//            """
+//        )
+//        return@submit serverDocumentManager.receiveOperation(documentId, revision, operation).also {
+//            logger.debug(
+//                """Transformed operation:
+//                        $it
+//                        Document after operation applied: ${serverDocumentManager.getDocument(documentId)}
+//                    """
+//            )
+//        }
+//    }.get() // TODO use reactive websockets
 
 }

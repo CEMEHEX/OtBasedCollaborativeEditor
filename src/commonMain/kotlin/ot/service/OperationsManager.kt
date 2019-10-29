@@ -22,10 +22,4 @@ interface OperationsManager<O : Operation<*>> {
      */
     fun invert(operation: O): O
 
-    /**
-     * Changes operation's revision number to specified one
-     *
-     */
-    fun changeRevision(operation: O, newRevision: Int): O
-
 }

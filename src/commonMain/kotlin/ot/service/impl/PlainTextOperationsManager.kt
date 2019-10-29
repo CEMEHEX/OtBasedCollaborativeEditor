@@ -24,23 +24,14 @@ class PlainTextOperationsManager : OperationsManager<PlainTextSingleCharacterOpe
     // TODO id must change, use id generator or something
     override fun invert(operation: PlainTextSingleCharacterOperation): PlainTextSingleCharacterOperation = when(operation) {
         is InsertOperation -> {
-            val (id, revision, position, symbol) = operation
-            DeleteOperation(id, revision, position, symbol) // TODO
+            val (id, position, symbol) = operation
+            DeleteOperation(id, position, symbol) // TODO
         }
         is DeleteOperation -> {
-            val (id, revision, position, symbol) = operation
-            InsertOperation(id, revision, position, symbol) // TODO
+            val (id, position, symbol) = operation
+            InsertOperation(id, position, symbol) // TODO
         }
         is IdentityOperation -> operation // TODO
-    }
-
-    override fun changeRevision(
-            operation: PlainTextSingleCharacterOperation,
-            newRevision: Int
-    ): PlainTextSingleCharacterOperation = when (operation) {
-        is InsertOperation -> operation.copy(revision = newRevision)
-        is DeleteOperation -> operation.copy(revision = newRevision)
-        is IdentityOperation -> operation.copy(revision = newRevision)
     }
 
     private fun transformInsertAgainstInsert(
@@ -56,7 +47,7 @@ class PlainTextOperationsManager : OperationsManager<PlainTextSingleCharacterOpe
         operation2: DeleteOperation
     ): PlainTextSingleCharacterOperation = when {
         operation1.position <= operation2.position -> operation1
-        else -> InsertOperation(operation1.id, operation1.revision, operation1.position - 1, operation1.symbol)
+        else -> InsertOperation(operation1.id,operation1.position - 1, operation1.symbol)
     }
 
     private fun transformDeleteAgainstInsert(
@@ -73,7 +64,7 @@ class PlainTextOperationsManager : OperationsManager<PlainTextSingleCharacterOpe
     ): PlainTextSingleCharacterOperation = when {
         operation1.position < operation2.position -> operation1
         operation1.position > operation2.position -> operation1.copy(position = operation1.position - 1)
-        else -> IdentityOperation(operation1.id, operation1.revision)
+        else -> IdentityOperation(operation1.id)
     }
 
 }

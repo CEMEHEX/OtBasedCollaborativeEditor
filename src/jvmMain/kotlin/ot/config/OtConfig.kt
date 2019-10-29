@@ -2,18 +2,10 @@ package ot.config
 
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
-import ot.service.OperationsManager
-import ot.service.impl.PlainTextOperationsManager
-import ot.service.impl.PlainTextSingleCharacterOperation
-import ot.service.DocumentOperationsHistoryService
-import ot.service.DocumentStorageService
-import ot.service.DocumentUpdater
-import ot.service.ServerDocumentManager
-import ot.service.impl.InMemoryDocumentOperationsHistoryService
-import ot.service.impl.InMemoryPlainTextDocumentStorageService
-import ot.service.impl.PlainTextDocumentUpdater
-import ot.service.impl.ServerDocumentManagerImpl
 import ot.entity.PlainTextDocument
+import ot.service.*
+import ot.service.impl.*
+import java.util.concurrent.ConcurrentHashMap
 
 @Configuration
 class OtConfig {
@@ -24,18 +16,18 @@ class OtConfig {
     @Bean
     fun plainTextDocumentStorage(): DocumentStorageService<PlainTextDocument> =
         InMemoryPlainTextDocumentStorageService(
-            mutableMapOf(
-                1L to PlainTextDocument(1, 0, "abc")
-            )
+            ConcurrentHashMap<Long, PlainTextDocument>().apply {
+                put(1L, PlainTextDocument(1, 0, ""))
+            }
         )
 
     @Bean
     fun plainTextDocumentOperationsHistoryManager(
     ): DocumentOperationsHistoryService<PlainTextSingleCharacterOperation> =
-        InMemoryDocumentOperationsHistoryService(mutableMapOf())
+        InMemoryDocumentOperationsHistoryService(ConcurrentHashMap())
 
     @Bean
-    fun plainTextDocumentUpdater() : DocumentUpdater<String, PlainTextDocument> =
+    fun plainTextDocumentUpdater(): DocumentUpdater<String, PlainTextDocument> =
         PlainTextDocumentUpdater()
 
     @Bean

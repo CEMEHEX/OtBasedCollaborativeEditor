@@ -16,7 +16,6 @@ sealed class PlainTextSingleCharacterOperation : Operation<String>
  */
 data class InsertOperation(
     override val id: Long,
-    override val revision: Int,
     val position: Int,
     val symbol: Char
 ) : PlainTextSingleCharacterOperation() {
@@ -36,7 +35,6 @@ data class InsertOperation(
  */
 data class DeleteOperation(
     override val id: Long,
-    override val revision: Int,
     val position: Int,
     val symbol: Char
 ) : PlainTextSingleCharacterOperation() {
@@ -56,8 +54,7 @@ data class DeleteOperation(
  *
  */
 data class IdentityOperation(
-    override val id: Long,
-    override val revision: Int
+    override val id: Long
 ) : PlainTextSingleCharacterOperation() {
     override fun applyTo(content: String): String = content
 }

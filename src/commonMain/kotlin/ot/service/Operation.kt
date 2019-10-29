@@ -12,12 +12,6 @@ interface Operation<T> {
      */
     val id: Long
 
-    // TODO separate operation and revision
-    /**
-     * Revision from which this operation created
-     */
-    val revision: Int
-
     /**
      * Applies operation to content
      *

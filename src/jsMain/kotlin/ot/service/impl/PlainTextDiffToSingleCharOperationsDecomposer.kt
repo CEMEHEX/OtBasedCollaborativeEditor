@@ -35,7 +35,6 @@ class PlainTextDiffToSingleCharOperationsDecomposer(
         DiffType.DELETION -> diff.content.map {
             DeleteOperation(
                 idGenerator.generateId(),
-                -1,
                 cursor,
                 it
             )
@@ -44,7 +43,6 @@ class PlainTextDiffToSingleCharOperationsDecomposer(
         DiffType.INSERTION -> diff.content.withIndex().map {
             InsertOperation(
                 idGenerator.generateId(),
-                -1,
                 cursor + it.index,
                 it.value
             )

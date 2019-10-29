@@ -8,8 +8,7 @@ import ot.service.OperationsManager
 
 class SynchronizedState<T, O : Operation<T>>(
     override val clientFSM: ClientFSM<T, O>,
-    private val operationsManager: OperationsManager<O>,
-    val revision: Int
+    private val operationsManager: OperationsManager<O>
 ) : State<T, O> {
 
     override fun processLocalOperation(operation: O): OperationApplicationCommand<O> {
@@ -18,7 +17,8 @@ class SynchronizedState<T, O : Operation<T>>(
     }
 
     override fun processRemoteOperation(operation: O): OperationApplicationCommand<O> {
-        clientFSM.state = SynchronizedState(clientFSM, operationsManager, operation.revision)
+        clientFSM.state = SynchronizedState(clientFSM, operationsManager)
+        ++clientFSM.revision
         return ApplyOperationLocally(operation)
     }
 }
