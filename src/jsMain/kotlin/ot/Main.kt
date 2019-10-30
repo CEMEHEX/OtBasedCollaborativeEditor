@@ -38,6 +38,9 @@ fun onOperationApplicationCommand(
 }
 
 fun setupWebSocket(documentUUID: String) {
+
+//    stompClient.disconnect { console.log("Stomp client disconnected") }
+
     fun onError(error: dynamic) {
         console.error("Websocket client error: $error")
     }
@@ -45,7 +48,7 @@ fun setupWebSocket(documentUUID: String) {
     fun onMessageReceived(payload: dynamic) {
         val operationJson = JSON.parse<Json>(payload.body as String)
         val operation = operationDeserializer.deserialize(operationJson)
-        console.log("Message received: ${JSON.stringify(operation)}")
+        console.log("Message received: ${payload.body}")
         onOperationApplicationCommand(clientDocumentManager?.processRemoteOperation(operation) ?: TODO())
     }
 

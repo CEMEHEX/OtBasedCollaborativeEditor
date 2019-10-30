@@ -10,7 +10,7 @@ class InMemoryOperationsRepository<O : Operation<*>>(
     override fun operationsCount(documentUUID: String): Int = operations[documentUUID]?.size ?: 0
 
     override fun addOperation(documentUUID: String, operation: O) {
-        operations.compute(documentUUID) {_, list -> list?.plus(operation) ?: emptyList() }
+        operations.compute(documentUUID) { _, list -> list?.let { it + operation } ?: listOf(operation) }
     }
 
     override fun getOperationsWithRevisionGte(
