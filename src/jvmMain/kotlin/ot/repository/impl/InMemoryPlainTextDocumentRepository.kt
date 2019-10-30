@@ -1,13 +1,13 @@
-package ot.service.impl
+package ot.repository.impl
 
 import ot.entity.PlainTextDocument
 import ot.exception.DocumentNotFoundException
-import ot.service.DocumentStorageService
+import ot.repository.DocumentRepository
 import java.util.concurrent.ConcurrentMap
 
-class InMemoryPlainTextDocumentStorageService(
+class InMemoryPlainTextDocumentRepository(
         private val documents: ConcurrentMap<String, PlainTextDocument>
-) : DocumentStorageService<PlainTextDocument> {
+) : DocumentRepository<PlainTextDocument> {
     override fun getDocumentByUUID(uuid: String): PlainTextDocument =
             documents[uuid] ?: throw DocumentNotFoundException(uuid)
 
@@ -16,4 +16,8 @@ class InMemoryPlainTextDocumentStorageService(
     }
 
     override fun getDocumentsList(): List<PlainTextDocument> = documents.values.toList()
+
+    override fun remove(documentUUID: String) {
+        documents.remove(documentUUID)
+    }
 }

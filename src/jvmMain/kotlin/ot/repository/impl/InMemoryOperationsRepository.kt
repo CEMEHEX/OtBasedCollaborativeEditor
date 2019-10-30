@@ -1,21 +1,24 @@
-package ot.service.impl
+package ot.repository.impl
 
-import ot.service.DocumentOperationsHistoryService
+import ot.repository.OperationsRepository
 import ot.service.Operation
 import java.util.concurrent.ConcurrentMap
 
-class InMemoryDocumentOperationsHistoryService<O : Operation<*>>(
+class InMemoryOperationsRepository<O : Operation<*>>(
     private val operations: ConcurrentMap<String, List<O>>
-) : DocumentOperationsHistoryService<O> {
-
+) : OperationsRepository<O> {
     override fun operationsCount(documentUUID: String): Int = operations[documentUUID]?.size ?: 0
 
     override fun addOperation(documentUUID: String, operation: O) {
         operations.compute(documentUUID) {_, list -> list?.plus(operation) ?: emptyList() }
     }
 
-    override fun getConcurrentOperations(
+    override fun getOperationsWithRevisionGte(
         documentUUID: String,
         revision: Int
     ): Collection<O> = operations[documentUUID]?.drop(revision) ?: emptyList()
+
+    override fun removeDocumentOperations(documentUUID: String) {
+        operations.remove(documentUUID)
+    }
 }

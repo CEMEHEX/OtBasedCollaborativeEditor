@@ -1,17 +1,18 @@
 package ot.service.impl
 
 import ot.entity.Document
-import ot.service.*
+import ot.service.DocumentStorageService
+import ot.service.Operation
+import ot.service.OperationsManager
+import ot.service.ServerDocumentManager
 import ot.util.transformAgainstEach
 
 class ServerDocumentManagerImpl<T, O : Operation<T>, D : Document<T>>(
-    private val operationsStorage: DocumentOperationsHistoryService<O>,
     private val operationsManager: OperationsManager<O>,
-    private val documentStorageService: DocumentStorageService<D>,
-    private val documentUpdater: DocumentUpdater<T, D>
+    private val documentStorageService: DocumentStorageService<T, O, D>
 ) : ServerDocumentManager<T, O, D> {
 
-    override fun getRevision(documentUUID: String) = operationsStorage.operationsCount(documentUUID)
+    override fun getRevision(documentUUID: String) = documentStorageService.getRevision(documentUUID)
 
     override fun getDocument(documentUUID: String): D = documentStorageService.getDocumentByUUID(documentUUID)
 
@@ -20,18 +21,12 @@ class ServerDocumentManagerImpl<T, O : Operation<T>, D : Document<T>>(
         revision: Int,
         operation: O
     ): O {
-        val concurrentOperations = operationsStorage.getConcurrentOperations(documentUUID, revision)
+        val concurrentOperations = documentStorageService.getConcurrentOperations(documentUUID, revision)
         // transform received operation against each concurrent operation
         val transformedOperation = concurrentOperations.transformAgainstEach(operation, operationsManager)
         val document = getDocument(documentUUID)
         val updatedContent = transformedOperation.applyTo(document.content)
-        val updatedDocument = documentUpdater.updateContentAndRevision(
-            document = document,
-            content = updatedContent,
-            revision = getRevision(documentUUID) + 1
-        )
-        documentStorageService.save(updatedDocument)
-        operationsStorage.addOperation(documentUUID, transformedOperation)
+        documentStorageService.updateDocumentWithOperation(document, updatedContent, transformedOperation)
         return transformedOperation
     }
 
