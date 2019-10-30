@@ -1,24 +1,31 @@
 package ot
 
+import org.w3c.dom.HTMLTextAreaElement
 import org.w3c.xhr.XMLHttpRequest
 import ot.command.ApplyOperationLocally
 import ot.command.NoCommand
 import ot.command.OperationApplicationCommand
 import ot.command.SendOperationToServer
-import ot.config.DemoAppConfig.clientDocumentManager
+import ot.config.DemoAppConfig
 import ot.config.DemoAppConfig.diffToOperationsDecomposer
+import ot.config.DemoAppConfig.documentTitleElement
 import ot.config.DemoAppConfig.documentsListElement
 import ot.config.DemoAppConfig.operationDeserializer
 import ot.config.DemoAppConfig.operationSerializer
 import ot.config.DemoAppConfig.stompClient
 import ot.config.DemoAppConfig.textAreaElement
 import ot.entity.PlainTextDocument
-import ot.service.impl.DeleteOperation
-import ot.service.impl.IdentityOperation
-import ot.service.impl.InsertOperation
-import ot.service.impl.PlainTextSingleCharacterOperation
+import ot.fsm.ClientFSM
+import ot.fsm.ClientFSMImpl
+import ot.fsm.SynchronizedState
+import ot.service.ClientDocumentManager
+import ot.service.impl.*
 import kotlin.browser.document
 import kotlin.js.Json
+
+var clientFsm: ClientFSM<String, PlainTextSingleCharacterOperation>? = null
+
+var clientDocumentManager: ClientDocumentManager<String, PlainTextSingleCharacterOperation>? = null
 
 fun onOperationApplicationCommand(
     operationApplicationCommand: OperationApplicationCommand<PlainTextSingleCharacterOperation>
@@ -30,7 +37,7 @@ fun onOperationApplicationCommand(
     }
 }
 
-fun setupWebSocket() {
+fun setupWebSocket(documentUUID: String) {
     fun onError(error: dynamic) {
         console.error("Websocket client error: $error")
     }
@@ -39,23 +46,22 @@ fun setupWebSocket() {
         val operationJson = JSON.parse<Json>(payload.body as String)
         val operation = operationDeserializer.deserialize(operationJson)
         console.log("Message received: ${JSON.stringify(operation)}")
-        onOperationApplicationCommand(clientDocumentManager.processRemoteOperation(operation))
+        onOperationApplicationCommand(clientDocumentManager?.processRemoteOperation(operation) ?: TODO())
     }
 
     fun onConnected() {
         // Subscribe to the Public Topic
-        stompClient.subscribe("/topic/public/operation/1", ::onMessageReceived)
+        stompClient.subscribe("/topic/public/operation/$documentUUID", ::onMessageReceived)
     }
 
     stompClient.connect(object {}, { onConnected() }, ::onError)
 }
 
-var REMOVE_IT_tmp_revision = 0
 fun sendOperation(operation: PlainTextSingleCharacterOperation) {
     val serializedMessage = operationSerializer.serialize(operation)
     console.log("Sending message: ${JSON.stringify(serializedMessage)}")
     stompClient.send(
-        "/app/document/1/revision/${REMOVE_IT_tmp_revision++}",
+        "/app/document/$curDocumentUUID/revision/${clientDocumentManager?.revision ?: TODO()}",
         {},
         JSON.stringify(serializedMessage)
     )
@@ -81,23 +87,28 @@ fun applyOperationLocally(operation: PlainTextSingleCharacterOperation) {
 }
 
 fun setupTextArea() {
-    var previousTextAreaData: String = textAreaElement.value
     textAreaElement.oninput = { inputEvent ->
         val cur = textAreaElement.value
         console.log("Prev text: $previousTextAreaData")
         console.log("Cur text: $cur")
         val operations = diffToOperationsDecomposer.diffToOperationList(previousTextAreaData, cur)
         console.log("Operations: $operations")
-        val test = operations.fold(previousTextAreaData) { result, current -> current.applyTo(result) }
-        console.log("Test: $test")
         previousTextAreaData = textAreaElement.value
-        operations.forEach { onOperationApplicationCommand(clientDocumentManager.processLocalOperation(it)) }
+        operations.forEach { onOperationApplicationCommand(clientDocumentManager?.processLocalOperation(it) ?: TODO()) }
         Unit
     }
 }
 
+var previousTextAreaData: String = textAreaElement.value
+fun setupTextAreaPreviousContentSaver() {
+    textAreaElement.addEventListener("beforeinput", {
+        console.log("Before input: ${(it.target as HTMLTextAreaElement).value}")
+        previousTextAreaData = (it.target as HTMLTextAreaElement).value
+    }
+    )
+}
+
 fun initializeDocumentsList() {
-    console.log(documentsListElement.nodeName)
     val xhr = XMLHttpRequest()
     xhr.open("GET", "document/all", false)
     xhr.send()
@@ -110,8 +121,25 @@ fun initializeDocumentsList() {
     }
 }
 
+var curDocumentUUID: String? = null // TODO
+fun loadDocument(uuid: String) {
+    curDocumentUUID = uuid
+    val xhr = XMLHttpRequest()
+    xhr.open("GET", "document/$uuid", false)
+    xhr.send()
+    val document = JSON.parse<PlainTextDocument>(xhr.responseText)
+    documentTitleElement.textContent = document.title
+    textAreaElement.value = document.content
+    clientFsm = ClientFSMImpl<String, PlainTextSingleCharacterOperation>(document.revision)
+        .apply { state = SynchronizedState(this, DemoAppConfig.operationsManager) }
+
+    clientDocumentManager = clientFsm?.let { ClientDocumentManagerImpl(it)}
+    setupWebSocket(uuid)
+}
+
 fun main() {
     initializeDocumentsList()
     setupTextArea()
-    setupWebSocket()
+    setupTextAreaPreviousContentSaver()
+    loadDocument("1")
 }

@@ -23,7 +23,7 @@ class OtConfig {
         val uuid = "1"
         return InMemoryPlainTextDocumentStorageService(
             ConcurrentHashMap<String, PlainTextDocument>().apply {
-                put(uuid, PlainTextDocument(uuid, 0, "", "Test document 1"))
+                put(uuid, PlainTextDocument(uuid, 0, "kek", "Test document 1"))
             }
         )
     }
