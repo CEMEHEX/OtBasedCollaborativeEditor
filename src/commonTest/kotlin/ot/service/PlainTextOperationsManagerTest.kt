@@ -1,5 +1,7 @@
 package ot.service
 
+import io.mockk.every
+import io.mockk.mockk
 import ot.service.impl.DeleteOperation
 import ot.service.impl.IdentityOperation
 import ot.service.impl.InsertOperation
@@ -10,8 +12,10 @@ import kotlin.test.assertTrue
 
 class PlainTextOperationsManagerTest {
 
-    private val idGenerator = object : IdGenerator<String> {
-        override fun generateId() = "uuid doesn't matter in this test"
+    private val idGenerator = mockk<IdGenerator<String>>()
+
+    init {
+        every { idGenerator.generateId() } returns "uuid doesn't matter in this test"
     }
 
     private val operationsManager = PlainTextOperationsManager(idGenerator)
