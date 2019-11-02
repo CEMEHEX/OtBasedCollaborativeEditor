@@ -77,7 +77,7 @@ kotlin {
 }
 
 jvmJar {
-    dependsOn(allTests, jsBrowserWebpack)
+    dependsOn(jsBrowserWebpack)
     from(new File(jsBrowserWebpack.entry.name, jsBrowserWebpack.outputPath)) {
         into 'static/js'
     }

@@ -90,7 +90,7 @@ fun applyOperationLocally(operation: PlainTextSingleCharacterOperation) {
 }
 
 fun setupTextArea() {
-    textAreaElement.oninput = { inputEvent ->
+    textAreaElement.oninput = {
         val cur = textAreaElement.value
         console.log("Prev text: $previousTextAreaData")
         console.log("Cur text: $cur")
@@ -136,7 +136,7 @@ fun loadDocument(uuid: String) {
     clientFsm = ClientFSMImpl<String, PlainTextSingleCharacterOperation>(document.revision)
         .apply { state = SynchronizedState(this, DemoAppConfig.operationsManager) }
 
-    clientDocumentManager = clientFsm?.let { ClientDocumentManagerImpl(it)}
+    clientDocumentManager = clientFsm?.let { ClientDocumentManagerImpl(it) }
     setupWebSocket(uuid)
 }
 
